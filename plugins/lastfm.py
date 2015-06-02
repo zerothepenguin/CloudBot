@@ -112,6 +112,8 @@ def lastfm(text, nick, db, bot, notice):
         out += " from the album \x02{}\x0f".format(album)
     if playcount:
         out += " [playcount: %s]" % playcount
+    else:
+        out += " [playcount: 0]
     if url:
         out += " {}".format(url)
 
@@ -166,7 +168,11 @@ def getusertrackplaycount(artist, track, user, bot):
     request = requests.get(api_url, params = params)
     track_info = request.json()
 
-    return track_info['track']['userplaycount'] if 'userplaycount' in track_info else 0
+    # This is probably the most Pythonic way to do this.
+    # 'track' is guaranteed to exist in track_info
+    # .get() returns the value of the key if present
+    # if not present it will return "None", and cannot raise an exception
+    return track_info['track'].get('userplaycount')
 
 @hook.command("plays")
 def getuserartistplaycount(text, nick, bot, notice):
